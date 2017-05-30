@@ -1,0 +1,25 @@
+{
+  "name": "liri-app",
+  "version": "1.0.0",
+  "description": "This is the liri app for homework 10",
+  "main": "liri.js",
+  "dependencies": {
+    "request": "^2.81.0",
+    "twit": "^2.2.5",
+    "twitter": "^1.7.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/scandrews/liri-node-app.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/scandrews/liri-node-app/issues"
+  },
+  "homepage": "https://github.com/scandrews/liri-node-app#readme"
+}
