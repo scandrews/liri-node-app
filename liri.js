@@ -1,13 +1,17 @@
-// This is theHomework 10 - the console API
+// This is Homework 10 - console APIs
 
 var request = require("request");
 const util = require('util');
 var Twitter = require('twitter');
+var Spotify = require('node-spotify-api');
 
 var keys = require('./keys');
+// logging code from github vikas5914/log.js
+var logTool = require('../writetofile/log.js');
 
 // get the thing to do from the command line
 var command = process.argv[2];
+// argument = process.argv[4];
 console.log("The command is - " + command);
 
 switch (command){
@@ -29,22 +33,27 @@ switch (command){
 };
 
 function getSpotifySongInfo(song){
-	console.log("spotify the song - " + song);
-	// url:"http://open.spotify.com/v1/track/6rqhFgbbKwnb9MLmUQDhG7/&song=command"
-	// request("http://api.spotify.com/v1/search?q=blue&type=album&artist=joni%20mitchell", function(error, response, body){
-	request(" https://api.spotify.com/v1/albums/4aawyAB9vmqN3uQ7FjRGTy", function(error, response, body){
-		if (!error && response.statusCode === 200) {
-			console.log("We got back from spotify - " + body);
-			console.log("the inspector - " + util.inspect(response, false, null));
+
+	var spotify = new Spotify({
+		id: keys.spotifyKeys.client_id,
+		secret: keys.spotifyKeys.client_secret
+	});
+	
+	spotify.search({ type: 'track', query: song }, function(err, data) {
+		if (err) {
+			console.log("Error occurred - " + err);
+			return;
 		}
-		else{
-			console.log("Got an Error - " + error);
-			console.log("the response status code - " + response.statusCode);
-			console.log("error inspector - " + util.inspect(error, false, null));
-			// console.log("response inspector - " + util.inspect(response, false, null));
-		}
-	})
+	 	for (i=0; i<data.tracks.items.length; i++){
+			console.log("Artist - " + data.tracks.items[i].artists[0].name);
+			console.log("Song - " + song);
+			console.log("Link to song preview - " + data.tracks.items[i].href);
+			console.log("Album - " + data.tracks.items[i].album.name);
+			console.log("");
+	 	}
+	});
 }
+
 
 function getLatestTweets(){
 	var twitterKeys = new Twitter(keys);
@@ -54,7 +63,7 @@ function getLatestTweets(){
 	var params = {
 		q: 'searchitem',
 		count: 5,
-		screen_name: 'scandrews3'
+		screen_name: 'nodejs'
 	}
 	twitterKeys.get('search/tweets', params, function(error, response, body) {
 		if (!error) {
@@ -69,26 +78,28 @@ function getLatestTweets(){
 			console.log("the inspector error - " + util.inspect(error, false, null));
 		}
 	});
-
-
 }
 
+
 function getMovieInfo(movieToGet){
-	
 	console.log("the movie is - " + movieToGet);
-			 // http://www.omdbapi.com/?i=tt3896198&apikey=bd9e5ee8
+	// request("http://www.omdbapi.com/?i=tt3896198&apikey=40e9cece" + movieToGet, function(error, response, body) {
+
 	request("http://www.omdbapi.com/?apikey=bd9e5ee8&t=" + movieToGet, function(error, response, body){
 		if (!error && response.statusCode === 200){
-			console.log("The Error - " + error);
-			console.log("The Response - " + response);
-			console.log("Response inspector - " + util.inspect(response, false, null));
-			console.log("The return Body - " + body);
+			console.log("Movie Title - " + body.Title);
+			console.log("Year - " + response.Year);
+			console.log("IMDB Rating - " + body.imdbRating);
+			console.log("body - " + body.statusCode);
+			logTool.info(body);
+			console.log("end NOT error");
 
 		}
 		else{
 			console.log("Error - " + error);
 			console.log("statusCode - " + response.statusCode);
 			// console.log("the inspector - " + util.inspect(response, false, null));
+			console.log("end EROR");
 		}
 	});
 }
