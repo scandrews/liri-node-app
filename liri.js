@@ -4,6 +4,7 @@ var request = require("request");
 const util = require('util');
 var Twitter = require('twitter');
 var Spotify = require('node-spotify-api');
+const randomTxt = require('random-txt')
 
 var keys = require('./keys');
 // logging code from github vikas5914/log.js
@@ -25,10 +26,14 @@ switch (command){
 		getMovieInfo(process.argv[3])
 		break;
 	case "do-what-it-says":
-
+		fs.readFile('./random.txt', function read(err, data) {
+	    if (err) {
+	        throw err;
+	    }
+	    content = data;
 		break;
-	default:
-		console.log("WTF")
+	default:	
+			console.log("WTF")
 		break;
 };
 
@@ -87,11 +92,13 @@ function getMovieInfo(movieToGet){
 
 	request("http://www.omdbapi.com/?apikey=bd9e5ee8&t=" + movieToGet, function(error, response, body){
 		if (!error && response.statusCode === 200){
+			var body = JSON.parse(body);
+			console.log("Response.body - " + body)
 			console.log("Movie Title - " + body.Title);
-			console.log("Year - " + response.Year);
-			console.log("IMDB Rating - " + body.imdbRating);
-			console.log("body - " + body.statusCode);
-			logTool.info(body);
+			console.log("Year - " + body.Year);
+			console.log("IMDB Rating - " + response.body.imdbRating);
+			console.log("response - " + response.statusCode);
+			// logTool.info(response);
 			console.log("end NOT error");
 
 		}
