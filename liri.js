@@ -5,37 +5,47 @@ const util = require('util');
 var Twitter = require('twitter');
 var Spotify = require('node-spotify-api');
 const randomTxt = require('random-txt')
+var fs = require('file-system');
 
 var keys = require('./keys');
 // logging code from github vikas5914/log.js
-var logTool = require('../writetofile/log.js');
+var logTool = require('./node_modules/log.js');
 
 // get the thing to do from the command line
-var command = process.argv[2];
+var newCommand = process.argv[2];
 // argument = process.argv[4];
-console.log("The command is - " + command);
+console.log("The command is - " + newCommand);
 
-switch (command){
-	case "my-tweets":
-		getLatestTweets()
-		break;
-	case "spotify-this-song":
-		getSpotifySongInfo(process.argv[3])
-		break;
-	case "movie-this":
-		getMovieInfo(process.argv[3])
-		break;
-	case "do-what-it-says":
-		fs.readFile('./random.txt', function read(err, data) {
-	    if (err) {
-	        throw err;
-	    }
-	    content = data;
-		break;
-	default:	
-			console.log("WTF")
-		break;
-};
+whatToDo(newCommand);
+
+function whatToDo(command){
+	switch (command){
+		case "my-tweets":
+			getLatestTweets()
+			break;
+		case "spotify-this-song":
+			getSpotifySongInfo(process.argv[3])
+			break;
+		case "movie-this":
+			getMovieInfo(process.argv[3])
+			break;
+		case "do-what-it-says":
+			fs.readFile('./random.txt', function read(err, data) {
+			    if (err) {
+			        throw err;
+			    }
+			    else{
+				    console.log("from randon.txt - " + txt.parse(data));
+				    whatToDo(data.Random.command);
+			    }
+			});
+			break;
+		default:	
+				console.log("WTF")
+			break;
+	};
+	
+}
 
 function getSpotifySongInfo(song){
 
@@ -55,6 +65,7 @@ function getSpotifySongInfo(song){
 			console.log("Link to song preview - " + data.tracks.items[i].href);
 			console.log("Album - " + data.tracks.items[i].album.name);
 			console.log("");
+			logTool.info("Song - " + data.tracks.items[i].artists[0].name + " " + song + " " + data.tracks.items[i].album.name);
 	 	}
 	});
 }
@@ -62,8 +73,6 @@ function getSpotifySongInfo(song){
 
 function getLatestTweets(){
 	var twitterKeys = new Twitter(keys);
-	// console.log("the inspector - " + util.inspect(twitterKeys, false, null));	
-	console.log("twitterKeys - " + twitterKeys.VERSION);
 
 	var params = {
 		q: 'searchitem',
@@ -76,37 +85,29 @@ function getLatestTweets(){
 			var tweets = response.statuses;
 			for (i=0; i < tweets.length; i++){
 				console.log("the tweet - " + tweets[i].text);
+				logTool.info("the tweet - " + tweets[i].text);
 			}
 		}
 		else if (error){
 			console.log ("Error - " + error)
-			console.log("the inspector error - " + util.inspect(error, false, null));
 		}
 	});
 }
 
 
 function getMovieInfo(movieToGet){
-	console.log("the movie is - " + movieToGet);
-	// request("http://www.omdbapi.com/?i=tt3896198&apikey=40e9cece" + movieToGet, function(error, response, body) {
 
 	request("http://www.omdbapi.com/?apikey=bd9e5ee8&t=" + movieToGet, function(error, response, body){
 		if (!error && response.statusCode === 200){
 			var body = JSON.parse(body);
-			console.log("Response.body - " + body)
 			console.log("Movie Title - " + body.Title);
 			console.log("Year - " + body.Year);
-			console.log("IMDB Rating - " + response.body.imdbRating);
-			console.log("response - " + response.statusCode);
-			// logTool.info(response);
-			console.log("end NOT error");
+			console.log("IMDB Rating - " + body.imdbRating);
+			logTool.info("The Movie - " + body.Title + " " + body.Year + " " + body.imdbRating);
 
 		}
 		else{
 			console.log("Error - " + error);
-			console.log("statusCode - " + response.statusCode);
-			// console.log("the inspector - " + util.inspect(response, false, null));
-			console.log("end EROR");
 		}
 	});
 }

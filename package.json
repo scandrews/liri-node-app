@@ -4,6 +4,7 @@
   "description": "This is the liri app for homework 10",
   "main": "liri.js",
   "dependencies": {
+    "file-system": "^2.2.2",
     "node-spotify-api": "^1.0.5",
     "querystring": "^0.2.0",
     "request": "^2.81.0",
